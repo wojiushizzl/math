@@ -10,6 +10,15 @@ def generate_question():
         if 0< eval(question)<20:
             break
     return question
+
+def transform(question):
+
+
+
+    return
+
+
+
 def highlight_row(row):
     if (row[ '答案'] !=None) :
         if (row[ '答案'] == row['你的回答']) :
@@ -41,7 +50,7 @@ def main():
 
     try:
         with colq:
-            st.header("题目:"+"       "+st.session_state.questions[st.session_state.i][0])
+            st.header("题目:"+"       "+st.session_state.questions[st.session_state.i][0]+'   =     (      ) ')
 
 
         st.text(str(st.session_state.i + 1) + '/' + str(question_num))
