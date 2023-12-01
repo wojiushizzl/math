@@ -1,21 +1,50 @@
 import streamlit as st
 import random
 import pandas as pd
+import re
+
 def generate_question():
     while True:
+        numq=random.randint(2,3)
         num1 = random.randint(0, 20)
         num2 = random.randint(0, 20)
-        operator = random.choice(['+', '-'])
-        question = f"{num1} {operator} {num2}"
+        num3 = random.randint(0, 20)
+
+        operator1 = random.choice(['+', '-'])
+        operator2 = random.choice(['+', '-'])
+
+        if numq ==2:
+            question = f"{num1} {operator1} {num2}"
+        else:
+            question = f"{num1} {operator1} {num2} {operator2} {num3}"
         if 0< eval(question)<20:
             break
     return question
 
 def transform(question):
+    print(question)
+    # 定义正则表达式模式
+    pattern1 = re.compile(r'\d+')
+    pattern2 = re.compile(r'(\d+)\s*([+\-*/])\s*(\d+)')
+
+    # 进行匹配
+    matches = len(pattern1.findall(question))
+    print(matches)
+    if matches==3:
+        question=question+'= ()'
+    else:
+        # 进行匹配
+        match = pattern2.match(question)
+        num1 = int(match.group(1))
+        operator1 = match.group(2)
+        num2 = int(match.group(3))
+        if operator1 == '+':
+            question= random.choice([f'(  )-{num1} = {num2}',question+'= ()'])
+        if operator1 == '-':
+            question=random.choice([f'(  )+{num2} = {num1}',question+'= ()'])
+    return question
 
 
-
-    return
 
 
 
@@ -33,15 +62,21 @@ def main():
     # 初始化 session_state
     # 在侧边栏设置内容
     # sidebar_option = st.sidebar.selectbox("Select an option", ["Option 1", "Option 2", "Option 3"])
-
-    question_num= st.sidebar.number_input("设置题目数量 ： ", min_value=10, max_value=200, value=100, step=10)
+    default=100
+    question_num= st.sidebar.number_input("设置题目数量 ： ", min_value=10, max_value=200, value=default, step=10)
 
     if 'flag' not in st.session_state:
         st.session_state.flag = False
-    if 'questions' not in st.session_state:
+    if ('questions' not in st.session_state) :
         st.session_state.questions = []
         for i in range(question_num):
             st.session_state.questions.append([generate_question()])
+    st.session_state.questions=st.session_state.questions[:question_num]
+    if 'questions_t' not in st.session_state :
+        st.session_state.questions_t = []
+        for i in range(question_num):
+            st.session_state.questions_t.append(transform(st.session_state.questions[i][0]))
+    st.session_state.questions_t=st.session_state.questions_t[:question_num]
     print(st.session_state.questions)
     if 'i' not in st.session_state:
         st.session_state.i=0
@@ -50,7 +85,7 @@ def main():
 
     try:
         with colq:
-            st.header("题目:"+"       "+st.session_state.questions[st.session_state.i][0]+'   =     (      ) ')
+            st.header("题目:"+"       "+st.session_state.questions_t[st.session_state.i])
 
 
         st.text(str(st.session_state.i + 1) + '/' + str(question_num))
@@ -99,10 +134,16 @@ def main():
             st.session_state.input += "9"
     col000,colz,colf=st.columns(3)
     def f() :
-        st.session_state.flag = True
-        st.session_state.i += 1
+        if st.session_state.i < question_num:
+            st.session_state.flag = True
+            st.session_state.i += 1
+        else:
+            st.success("完成答题！")
+            st.success("刷新网页重新开始！")
     with colf:
         if st.button("🤭确定",use_container_width=True,on_click=f):
+ 
+
             print("")
     with colz:
         if st.button("◀取消",use_container_width=True):

@@ -1,15 +1,53 @@
 import streamlit as st
 import random
 import pandas as pd
+import re
+
 def generate_question():
     while True:
+        numq=random.randint(2,3)
         num1 = random.randint(0, 20)
         num2 = random.randint(0, 20)
-        operator = random.choice(['+', '-'])
-        question = f"{num1} {operator} {num2}"
+        num3 = random.randint(0, 20)
+
+        operator1 = random.choice(['+', '-'])
+        operator2 = random.choice(['+', '-'])
+
+        if numq ==2:
+            question = f"{num1} {operator1} {num2}"
+        else:
+            question = f"{num1} {operator1} {num2} {operator2} {num3}"
         if 0< eval(question)<20:
             break
     return question
+
+def transform(question):
+    print(question)
+    # 定义正则表达式模式
+    pattern1 = re.compile(r'\d+')
+    pattern2 = re.compile(r'(\d+)\s*([+\-*/])\s*(\d+)')
+
+    # 进行匹配
+    matches = len(pattern1.findall(question))
+    print(matches)
+    if matches==3:
+        question=question+'= ()'
+    else:
+        # 进行匹配
+        match = pattern2.match(question)
+        num1 = int(match.group(1))
+        operator1 = match.group(2)
+        num2 = int(match.group(3))
+        if operator1 == '+':
+            question= random.choice([f'(  )-{num1} = {num2}',question+'= ()'])
+        if operator1 == '-':
+            question=random.choice([f'(  )+{num2} = {num1}',question+'= ()'])
+    return question
+
+
+
+
+
 def highlight_row(row):
     if (row[ '答案'] !=None) :
         if (row[ '答案'] == row['你的回答']) :
@@ -33,6 +71,10 @@ def main():
         st.session_state.questions = []
         for i in range(question_num):
             st.session_state.questions.append([generate_question()])
+    if 'questions_t' not in st.session_state:
+        st.session_state.questions_t = []
+        for i in range(question_num):
+            st.session_state.questions_t.append(transform(st.session_state.questions[i][0]))
     print(st.session_state.questions)
     if 'i' not in st.session_state:
         st.session_state.i=0
@@ -41,7 +83,7 @@ def main():
 
     try:
         with colq:
-            st.header("题目:"+"       "+st.session_state.questions[st.session_state.i][0])
+            st.header("题目:"+"       "+st.session_state.questions_t[st.session_state.i])
 
 
         st.text(str(st.session_state.i + 1) + '/' + str(question_num))
