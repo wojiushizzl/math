@@ -24,7 +24,7 @@ def main():
     # 初始化 session_state
     # st.sidebar()
 
-    question_num=10
+    question_num=100
     coly,colz= st.columns(2)
 
     with colz:
