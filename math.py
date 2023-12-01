@@ -1,4 +1,3 @@
-# """"test"""
 import streamlit as st
 import random
 import pandas as pd
@@ -23,16 +22,11 @@ def highlight_row(row):
 def main():
     st.title("20以内加减法出题器")
     # 初始化 session_state
-    # st.sidebar()
+    # 在侧边栏设置内容
+    # sidebar_option = st.sidebar.selectbox("Select an option", ["Option 1", "Option 2", "Option 3"])
 
-    question_num=100
-    coly,colz= st.columns(2)
+    question_num= st.sidebar.number_input("设置题目数量 ： ", min_value=10, max_value=200, value=100, step=10)
 
-    with colz:
-        if st.button("确定",use_container_width=True):
-            # 在这里你可以处理用户按下回车的逻辑，例如执行计算或其他操作
-            st.session_state.flag = True
-            st.session_state.i += 1
     if 'flag' not in st.session_state:
         st.session_state.flag = False
     if 'questions' not in st.session_state:
@@ -43,15 +37,17 @@ def main():
     if 'i' not in st.session_state:
         st.session_state.i=0
     print("第一次",st.session_state.i)
-    # 显示当前题目
+    colq,cola=st.columns(2)
+
     try:
-        st.header("题目:"+"       "+st.session_state.questions[st.session_state.i][0])
+        with colq:
+            st.header("题目:"+"       "+st.session_state.questions[st.session_state.i][0])
+
+
         st.text(str(st.session_state.i + 1) + '/' + str(question_num))
     except:
-        with coly:
-
-            st.success("完成答题！")
-            st.success("刷新网页重新开始！")
+        st.success("完成答题！")
+        st.success("刷新网页重新开始！")
 
     # 获取用户输入
     # user_answer = st.number_input("请输入你的答案:", value=None)
@@ -92,14 +88,22 @@ def main():
     with col9:
         if st.button("9",use_container_width=True):
             st.session_state.input += "9"
-
-
-    if st.button("0",use_container_width=True):
-        st.session_state.input += "0"
-
-
-    input_text = st.text_input("输入", value=st.session_state.input)
-
+    col000,colz,colf=st.columns(3)
+    def f() :
+        st.session_state.flag = True
+        st.session_state.i += 1
+    with colf:
+        if st.button("🤭确定",use_container_width=True,on_click=f):
+            print("")
+    with colz:
+        if st.button("◀取消",use_container_width=True):
+            st.session_state.input=''
+    with col000:
+        if st.button("0",use_container_width=True):
+            st.session_state.input += "0"
+    with cola:
+        input_text = st.text_input("", value=st.session_state.input)
+    st.warning("加油！💪")
     # 检查用户答案
     try:
         print("第二次",st.session_state.i)
@@ -109,26 +113,18 @@ def main():
             user_answer = int(st.session_state.input)
             print(user_answer)
         if st.session_state.i==0:
-            with coly:
-
-               st.success("开始答题吧！")
+           st.success("开始答题吧！")
         elif st.session_state.flag==True:
             print(st.session_state.flag)
             try:
                 right_answer = int(eval(st.session_state.questions[st.session_state.i - 1][0]))
                 print(right_answer)
             except:
-                with coly:
-
-                   st.success("刷新网页重新开始！")
+               st.success("刷新网页重新开始！")
             if eval(st.session_state.questions[st.session_state.i-1][0]) == user_answer:
-                with coly:
-
-                    st.success("回答正确！")
+                st.success("回答正确！真棒！(●'◡'●)")
             else:
-                with coly:
-
-                    st.error(f"回答错误。正确答案是: {right_answer}")
+                st.error(f"回答错误。(；′⌒`)    正确答案是: {right_answer}")
             st.session_state.questions[st.session_state.i - 1].append(str(right_answer))
             print('a')
             st.session_state.questions[st.session_state.i - 1].append(str(user_answer))
@@ -144,8 +140,7 @@ def main():
         st.dataframe(styled_df,use_container_width=True)
 
     except ValueError:
-        with coly:
-            print("")
+        print("")
 
            # st.warning("请输入一个有效的整数作为答案。")
 
