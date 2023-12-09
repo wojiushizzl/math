@@ -25,7 +25,7 @@ def transform(question):
     return question
 def question_type1():   # 加减计算填写数字
     while True:
-        numq=random.randint(2,3)
+        numq=random.randint(2,2)   #两个数的运算 或者是 三个数
         num1 = random.randint(0, 20)
         num2 = random.randint(0, 20)
         num3 = random.randint(0, 20)
@@ -42,8 +42,8 @@ def question_type1():   # 加减计算填写数字
     return [transform(question),eval(question)]
 def question_type2():   # 填加减符号
     while True:
-        num1 = random.randint(0, 20)
-        num2 = random.randint(0, 20)
+        num1 = random.randint(1, 20)
+        num2 = random.randint(1, 20)
 
         operator = random.choice(['+', '-'])
 
@@ -76,8 +76,9 @@ def question_type3():   # 填大于小于等于 符号
             break
 
     return [question,answer]
-def generate_question():
-    rand_type=random.randint(1,3)
+def generate_question(i):
+    # rand_type=random.randint(1,3)
+    rand_type=i
     # print(rand_type)
     if rand_type==1:
         return question_type1()
@@ -103,14 +104,22 @@ def main():
     # 在侧边栏设置内容
     # sidebar_option = st.sidebar.selectbox("Select an option", ["Option 1", "Option 2", "Option 3"])
     default=100
-    question_num= st.sidebar.number_input("设置题目数量 ： ", min_value=10, max_value=200, value=default, step=10)
+    question_num= st.sidebar.number_input("设置题目数量 ： ", min_value=10, max_value=100, value=default, step=10)
 
     if 'flag' not in st.session_state:
         st.session_state.flag = False
     if ('questions' not in st.session_state) :
         st.session_state.questions = []
+        rate=[0.6,0.2,0.2]
         for i in range(question_num):
-            st.session_state.questions.append(generate_question())
+            if i <= question_num*rate[0]:
+                st.session_state.questions.append(generate_question(1))
+            elif question_num*rate[0] < i <= question_num*(rate[0]+rate[1]):
+                st.session_state.questions.append(generate_question(2))
+            else:
+                st.session_state.questions.append(generate_question(3))
+    
+    
     st.session_state.questions=st.session_state.questions[:question_num]
     print(st.session_state.questions)
     if 'score' not in st.session_state:
@@ -119,19 +128,19 @@ def main():
         st.session_state.i=0
     print("1st",st.session_state.i)
     colq,cola=st.columns(2)
-
+    if 'input' not in st.session_state:
+        st.session_state.input = ''
     try:
         with colq:
             st.header("题目:"+"       "+st.session_state.questions[st.session_state.i][0])
 
-
         st.text(str(st.session_state.i + 1) + '/' + str(question_num))
     except:
-        st.success("完成答题！ 得分："+str(st.session_state.score))
+        print("")
+        st.success("完成答题！ ")
         st.success("刷新网页重新开始！")
 
-    if 'input' not in st.session_state:
-        st.session_state.input = ''
+
     # 创建符号按钮
     coldayu,colxiaoyu,coldengyu,coljia,coljian=st.columns(5)
     with coldayu:
@@ -201,19 +210,18 @@ def main():
     with col000:
         if st.button("0",use_container_width=True):
             st.session_state.input += "0"
-    with cola:
-        # input_text = st.text_input("", value=st.session_state.input)
-        st.header(st.session_state.input)
+    # with cola:
+    #     # input_text = st.text_input("", value=st.session_state.input)
+    #     st.header(st.session_state.input)
     # 检查用户答案
     try:
         print("2nd",st.session_state.i)
-        if st.session_state.input=='':
-            user_answer = 0
-        else:
-            user_answer = st.session_state.input
+        print(st.session_state.input)
+
+        user_answer = st.session_state.input
         if st.session_state.i==0:
            st.success("开始答题吧！")
-        elif st.session_state.flag==True:
+        if st.session_state.flag==True:
             right_answer = str(st.session_state.questions[st.session_state.i - 1][1])
             # if int(st.session_state.questions[st.session_state.i - 1][1]) == user_answer:
             #     st.success("回答正确！真棒！(●'◡'●)")
@@ -221,7 +229,10 @@ def main():
             #     st.error(f"回答错误。(；′⌒`)    正确答案是: {right_answer}")
             st.session_state.questions[st.session_state.i - 1].append(str(user_answer))
             st.session_state.input=''
+
             st.session_state.flag = False
+        with cola:
+            st.header(st.session_state.input)
         df = pd.DataFrame(st.session_state.questions, columns=['题目', '答案', '你的回答'])
         df['答案'] = df['答案'].astype(str)
         df['你的回答'] = df['你的回答'].astype(str)
@@ -229,11 +240,11 @@ def main():
         st.session_state.score=str(df['正确与否'].sum())+"/"+str(question_num)
         styled_df = df.style.apply(highlight_row, axis=1)
         if st.session_state.i ==question_num:
+            st.success("得分："+ st.session_state.score)
             st.dataframe(styled_df,use_container_width=True)
 
     except ValueError:
         print("")
-           # st.warning("请输入一个有效的整数作为答案。")
            
     user_answer=None
 
