@@ -224,7 +224,7 @@ def main():
         if st.session_state.flag==True:
             right_answer = str(st.session_state.questions[st.session_state.i - 1][1])
             # if int(st.session_state.questions[st.session_state.i - 1][1]) == user_answer:
-            st.success("下一题！(●'◡'●)")
+            #     st.success("回答正确！真棒！(●'◡'●)")
             # else:
             #     st.error(f"回答错误。(；′⌒`)    正确答案是: {right_answer}")
             st.session_state.questions[st.session_state.i - 1].append(str(user_answer))
