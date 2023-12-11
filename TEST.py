@@ -78,7 +78,7 @@ def question_type3():   # 填大于小于等于 符号
 
 def question_type4():
     while True:
-        num1 = random.randint(1, 20)
+        num1 = random.randint(1, 18)
         num2 = random.randint(num1+1, 20)
         question="小明昨天从第{}页读到第{}页，请问一共读了几页?".format(num1,num2)
         answer=num2-num1+1
@@ -88,7 +88,7 @@ def question_type4():
 
 def question_type5():
     while True:
-        num1 = random.randint(1, 20)
+        num1 = random.randint(1, 18)
         num2 = random.randint(num1+1, 20)
         question="小红排在第{}，小明排在第{}，请问他们之间有几个人?".format(num1,num2)
         answer=num2-num1-1
