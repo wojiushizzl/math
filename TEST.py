@@ -84,7 +84,7 @@ def question_type4():
         answer=num2-num1+1
         if 0< answer<20:   #限制难度
             break
-    return [question,answer]
+    return [question,str(answer)]
 
 def generate_question(i):
     # rand_type=random.randint(1,3)
