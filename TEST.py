@@ -74,8 +74,18 @@ def question_type3():   # 填大于小于等于 符号
             answer = "<"
         if 0< a<20:   #限制难度
             break
-
     return [question,answer]
+
+def question_type4():
+    while True:
+        num1 = random.randint(1, 20)
+        num2 = random.randint(num1, 20)
+        question="小明昨天从第{}页读到第{}页，请问一共读了几页?".format(num1,num2)
+        answer=num2-num1+1
+        if 0< answer<20:   #限制难度
+            break
+    return [question,answer]
+
 def generate_question(i):
     # rand_type=random.randint(1,3)
     rand_type=i
@@ -86,6 +96,8 @@ def generate_question(i):
         return question_type2()
     elif rand_type ==3:
         return question_type3()
+    elif rand_type ==4:
+        return question_type4()
     
 
 
@@ -110,14 +122,16 @@ def main():
         st.session_state.flag = False
     if ('questions' not in st.session_state) :
         st.session_state.questions = []
-        rate=[0.6,0.2,0.2]
+        rate=[0.5,0.2,0.2,0.1]
         for i in range(question_num):
             if i <= question_num*rate[0]:
                 st.session_state.questions.append(generate_question(1))
             elif question_num*rate[0] < i <= question_num*(rate[0]+rate[1]):
                 st.session_state.questions.append(generate_question(2))
-            else:
+            elif question_num*(rate[0]+rate[1]) < i <= question_num*(rate[0]+rate[1]+rate[2]):
                 st.session_state.questions.append(generate_question(3))
+            else:
+                st.session_state.questions.append(generate_question(4))
     
     
     st.session_state.questions=st.session_state.questions[:question_num]
