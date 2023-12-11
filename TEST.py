@@ -79,9 +79,19 @@ def question_type3():   # 填大于小于等于 符号
 def question_type4():
     while True:
         num1 = random.randint(1, 20)
-        num2 = random.randint(num1, 20)
+        num2 = random.randint(num1+1, 20)
         question="小明昨天从第{}页读到第{}页，请问一共读了几页?".format(num1,num2)
         answer=num2-num1+1
+        if 0< answer<20:   #限制难度
+            break
+    return [question,str(answer)]
+
+def question_type5():
+    while True:
+        num1 = random.randint(1, 20)
+        num2 = random.randint(num1+1, 20)
+        question="小红排在第{}，小明排在第{}，请问他们之间有几个人?".format(num1,num2)
+        answer=num2-num1-1
         if 0< answer<20:   #限制难度
             break
     return [question,str(answer)]
@@ -98,7 +108,8 @@ def generate_question(i):
         return question_type3()
     elif rand_type ==4:
         return question_type4()
-    
+    elif rand_type ==5:
+        return question_type5()
 
 
 def highlight_row(row):
@@ -122,7 +133,7 @@ def main():
         st.session_state.flag = False
     if ('questions' not in st.session_state) :
         st.session_state.questions = []
-        rate=[0.5,0.2,0.2,0.1]
+        rate=[0.5,0.2,0.2,0.05,0.05]
         for i in range(question_num):
             if i <= question_num*rate[0]:
                 st.session_state.questions.append(generate_question(1))
@@ -130,8 +141,10 @@ def main():
                 st.session_state.questions.append(generate_question(2))
             elif question_num*(rate[0]+rate[1]) < i <= question_num*(rate[0]+rate[1]+rate[2]):
                 st.session_state.questions.append(generate_question(3))
-            else:
+            elif question_num*(rate[0]+rate[1]+rate[2]) < i <= question_num*(rate[0]+rate[1]+rate[2]+rate[3]):
                 st.session_state.questions.append(generate_question(4))
+            else:
+                st.session_state.questions.append(generate_question(5))
     
     
     st.session_state.questions=st.session_state.questions[:question_num]
